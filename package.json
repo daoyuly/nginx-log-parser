@@ -1,0 +1,19 @@
+{
+  "name": "logparser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "co": "^4.6.0",
+    "collections": "^5.0.7",
+    "mongoose": "^4.11.5",
+    "nginxparser": "^2.1.0",
+    "promise": "^8.0.1",
+    "thunkify": "^2.1.2"
+  }
+}
