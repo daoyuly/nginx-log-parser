@@ -1,15 +1,18 @@
 
+const ieReg = /MSIE\s([\d.]+)/;
+
 function detectBrowswer (ua) {
     var browserName = "Other";
+    
     browserRegExp = {
       Sogou : /SE\s2\.X|SogouMobileBrowser/,
       Explorer2345 : /2345Explorer|2345chrome|Mb2345Browser/,
       Liebao : /LBBROWSER/,
+      Wechat : /MicroMessenger/,
       QQBrowser : /QQBrowser/,
       Baidu : /BIDUBrowser|baidubrowser|BaiduHD/,
       UC : /UBrowser|UCBrowser|UCWEB/,
       MiuiBrowser : /MiuiBrowser/,
-      Wechat : /MicroMessenger/,
       MobileQQ : /Mobile\/\w{5,}\sQQ\/(\d+[\.\d]+)/,
       Shoujibaidu : /baiduboxapp/,
       Firefox : /Firefox/,
@@ -29,6 +32,13 @@ function detectBrowswer (ua) {
     for (var i in browserRegExp) {
       if (browserRegExp[i].exec(ua)) {
         browserName = i;
+        if (browserName == "IE") {
+          let match = ua.match(ieReg);
+          let ver = (match && match[1])
+          if (ver) {
+            browserName = browserName + ' ' + ver;
+          }
+        }
         break;
       }
     }

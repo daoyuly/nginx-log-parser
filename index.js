@@ -10,6 +10,9 @@ var NginxParser = require('nginxparser');
 var detectBrowswer = require('./browser');
 var util = require('./util');
 var DBA = require('./db');
+var uaParser = require('./uaParser');
+
+var errorParser = require('./errorParser');
 
 // 使用co异步
 var co = require('co');
@@ -26,7 +29,7 @@ var yesterday = new Date();
 yesterday.setDate(yesterday.getDate() - 1);
 // var logFileName = '20170728.txt' 
 var logFileName = 'https.log.umu.cn.access_' + yesterday.getFullYear() + util.pad0(yesterday.getMonth()+1) + util.pad0(yesterday.getDate()) + '.log';
-
+console.log(logFileName)
 function parseLog(resolve, reject) {
     var parser = new NginxParser(logFormat);
 
@@ -34,11 +37,25 @@ function parseLog(resolve, reject) {
 
     parser.read('/Users/liudaoyu/Documents/work/nginx-log/log/'+logFileName, function(row) {
         i = i + 1;
-        var query = decodeURIComponent(row.request);
+        
+        var query = '';
+        try {
+            query = decodeURIComponent(row.request);
+        } catch(e) {
+            query = row.request;
+            console.log(e);
+        }
+        
         var msg = util.getErrorMsg(query);
+        let date = util.formateLogTime(row.time_local);
+        let parserUa = uaParser(row.http_user_agent);
+        let parserErr =errorParser(msg);
+
         // 数据集
         var content = {
-            time_local:  util.formateLogTime(row.time_local),
+            time_local:  row.time_local,
+            time_local_date:  date.toLocaleDateString(),
+            time_local_timestamp: date.getTime(),            
             remote_addr: row.remote_addr,
             remote_user: row.remote_user,
             request: msg,
@@ -47,13 +64,17 @@ function parseLog(resolve, reject) {
             request_time: row.request_time,
             body_bytes_sent: row.body_bytes_sent,
             http_referer: row.http_referer,
+            http_referer_url: util.getUrl(row.http_referer),
             http_user_agent: row.http_user_agent,
             msec: row.msec,
             browser: detectBrowswer(row.http_user_agent)
         };
 
-        list.add(content);
-         // console.log(i);
+         Object.assign(content, parserUa); // 附加
+         Object.assign(content, parserErr); // 附加
+
+         list.add(content);
+        // console.log(parserErr);
 
     }, function(err) {
         if (err) throw err;
@@ -97,7 +118,7 @@ promise.then(function(list) {
 });
 
 function saveToDb(list) {
-    // return;
+  //return;
     var index = 1;
     var _index = 0;
     var timerId = 0;

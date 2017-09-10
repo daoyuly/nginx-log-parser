@@ -8,6 +8,8 @@ var DB_URL = 'mongodb://localhost:27017/test';
 // 设置数据类型
 var logSchema = new mongoose.Schema({
     time_local: { type: String },
+    time_local_date: { type: String },
+    time_local_timestamp: { type: Number },
     remote_addr: { type: String },
     remote_user: { type: String },
     request: { type: String },
@@ -16,9 +18,21 @@ var logSchema = new mongoose.Schema({
     request_time: { type: String },
     body_bytes_sent: { type: String },
     http_referer: { type: String },
+    http_referer_url: { type: String },
     http_user_agent: { type: String },
     msec: { type: String },
-    browser: { type: String }
+    browser: { type: String },
+
+    browser_v: { type: String },                // ua 分析
+    engine: { type: String },
+    engine_v: { type: String },
+    OS: { type: String },
+    OS_v: { type: String },
+    vendor: { type: String },
+    device_model: { type: String },
+
+    error_type: { type: String },               // request 分析
+    error_content: { type: String },
 });
 
 

@@ -1,4 +1,6 @@
 
+'use strict'
+
 var reg = /GET \/hm.gif\?bl_param=/ig;
 var reg2 = /\&t=\d*\sHTTP\/1\.1/ig;
 
@@ -30,8 +32,13 @@ function formateLogTime(strDate) {
     return date
 }
 
+function getUrl(url) {
+    return url ? url.split('?')[0]:''; 
+}
+
 module.exports = {
     getErrorMsg: getErrorMsg,
     pad0: pad0,
-    formateLogTime: formateLogTime
+    formateLogTime: formateLogTime,
+    getUrl
 }

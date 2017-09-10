@@ -20,6 +20,7 @@
 
 2. 使用mongodb工具分析数据
 
+3. [ua parser](https://github.com/daoyuly/ua-parser-js)
 
 ## 后续计划
 
