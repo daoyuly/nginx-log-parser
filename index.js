@@ -7,35 +7,33 @@ var Promise = require('promise');
 var Map = require("collections/map");
 var List = require("collections/list");
 var NginxParser = require('nginxparser');
-var detectBrowswer = require('./browser');
-var util = require('./util');
-var DBA = require('./db');
-var uaParser = require('./uaParser');
+var detectBrowswer = require('./src/browser');
+var util = require('./src/util');
+var DBA = require('./src/db');
+var uaParser = require('./src/uaParser');
 
-var errorParser = require('./errorParser');
+var errorParser = require('./src/errorParser');
+var logFile = require('./src/logFile');
+var download = require('./src/download');
 
 // 使用co异步
-var co = require('co');
+/* var co = require('co');
 var thunkify = require('thunkify');
 var request = require('request');
-var get = thunkify(request.get);
+var get = thunkify(request.get); */
 
 var dba = new DBA();
 var list = new List();
 // var logFormat = '[$time_local] - $remote_addr - $remote_user "$request" $status $request_length $request_time - $body_bytes_sent $body_bytes_sent "$http_referer" "$http_user_agent" "-" "-" $msec';
 var logFormat = '[$time_local] - $remote_addr - $remote_user "$request" $status "-" $request_length $request_time - $body_bytes_sent $body_bytes_sent "$http_referer" "$http_user_agent" "-" "-" $msec';
+var logFormat_0928 = '[$time_local] - $remote_addr - $remote_user "$request" $status "-" $request_length $request_time "-" "-" $body_bytes_sent $body_bytes_sent "$http_referer" "$http_user_agent" "-" "$msec" "$msec" "$msec" "$msec"';
 
-var yesterday = new Date();
-yesterday.setDate(yesterday.getDate() - 1);
-// var logFileName = '20170728.txt' 
-var logFileName = 'https.log.umu.cn.access_' + yesterday.getFullYear() + util.pad0(yesterday.getMonth()+1) + util.pad0(yesterday.getDate()) + '.log';
-console.log(logFileName)
 function parseLog(resolve, reject) {
-    var parser = new NginxParser(logFormat);
-
+    var parser = new NginxParser(logFormat_0928);
     var i = 0
-
-    parser.read('/Users/liudaoyu/Documents/work/nginx-log/log/'+logFileName, function(row) {
+    console.log('before read')
+    var logFileName = logFile.getLogFileName();
+    parser.read(logFileName, function(row) {
         i = i + 1;
         
         var query = '';
@@ -74,51 +72,33 @@ function parseLog(resolve, reject) {
          Object.assign(content, parserErr); // 附加
 
          list.add(content);
-        // console.log(parserErr);
+         console.log(parserErr);
 
     }, function(err) {
         if (err) throw err;
-        console.log(err)
+        console.log(`error: ${err}`)
         console.log('Done!')
         resolve(list);
+        
     });
 
 
 }
 
-
-
-var promise = new Promise(function(resolve, reject) {
-    parseLog(resolve, reject)
-});
-
-function innerGetIp(ip) {
-    var a = get('http://ip.taobao.com/service/getIpInfo.php?ip='+list[i].remote_addr);
-    return a;
-}
-
-promise.then(function(list) {
+download().then(function() {
+    var promise = new Promise(function(resolve, reject) {
+        console.log('begin parseLog');
+        parseLog(resolve, reject)
+        console.log('after parseLog');
+    });
     
-/*     var fn = co.wrap(function *(list){
-        for(var i = 0; i < list.length; i++) {
-            console.log(list);
-            var ip = '0.0.0.0'; // list[i].remote_addr
-            
-            var a = yield innerGetIp(ip);
-            console.log(a[0].body);
-        }
-    });
-
-    fn(list).then(function(){
-        console.log('ip设置ok')
+    promise.then(function(list) {
         saveToDb(list);
-    });  */
-
-     saveToDb(list);
+    });
 });
+
 
 function saveToDb(list) {
-  //return;
     var index = 1;
     var _index = 0;
     var timerId = 0;

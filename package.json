@@ -9,11 +9,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.0",
     "co": "^4.6.0",
     "collections": "^5.0.7",
     "mongoose": "^4.11.5",
     "nginxparser": "^2.1.0",
+    "progress-stream": "^2.0.0",
     "promise": "^8.0.1",
+    "request": "^2.83.0",
     "thunkify": "^2.1.2",
     "ua-parser-js": "^0.7.14"
   }
