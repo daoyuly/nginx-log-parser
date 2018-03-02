@@ -11,13 +11,13 @@ var logFile =  {
         getFileName: function() {
             var yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            // var logFileName = 'https.log.umu.cn.access_20171002.log'
-            var logFileName =
+               // var logFileName = 'https.log.umu.cn.access_20180212.log'
+               var logFileName =
                 'https.log.umu.cn.access_' +
                 yesterday.getFullYear() +
                 util.pad0(yesterday.getMonth() + 1) +
                 util.pad0(yesterday.getDate()) +
-                '.log';
+                '.log';  
 
             return logFileName;
         },

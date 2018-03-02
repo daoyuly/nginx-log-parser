@@ -15,7 +15,9 @@ var uaParser = require('./src/uaParser');
 var errorParser = require('./src/errorParser');
 var logFile = require('./src/logFile');
 var download = require('./src/download');
+var ipx = require("./libs/iplib/ip")
 
+ipx.load("./libs/iplib/17monipdb.dat")
 // 使用co异步
 /* var co = require('co');
 var thunkify = require('thunkify');
@@ -55,6 +57,7 @@ function parseLog(resolve, reject) {
             time_local_date:  date.toLocaleDateString(),
             time_local_timestamp: date.getTime(),            
             remote_addr: row.remote_addr,
+            remote_loaction: ipx.findSync(row.remote_addr),
             remote_user: row.remote_user,
             request: msg,
             status: row.status,
@@ -85,18 +88,6 @@ function parseLog(resolve, reject) {
 
 }
 
-download().then(function() {
-    var promise = new Promise(function(resolve, reject) {
-        console.log('begin parseLog');
-        parseLog(resolve, reject)
-        console.log('after parseLog');
-    });
-    
-    promise.then(function(list) {
-        saveToDb(list);
-    });
-});
-
 
 function saveToDb(list) {
     var index = 1;
@@ -124,3 +115,22 @@ function saveToDb(list) {
         
     }, 10); 
 }
+
+
+ download().then(function() {
+    parserLog();
+});  
+
+function parserLog() {
+    var promise = new Promise(function(resolve, reject) {
+        console.log('begin parseLog');
+        parseLog(resolve, reject)
+        console.log('after parseLog');
+    });
+    
+    promise.then(function(list) {
+        saveToDb(list);
+    });
+}
+
+  // parserLog();

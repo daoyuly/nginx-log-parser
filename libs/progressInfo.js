@@ -58,7 +58,7 @@ class ProgressInfo {
 
     bindEvents() {
         this.rl.on('close', function() {
-            process.exit(0);
+            // process.exit(0);
         });
     }
 

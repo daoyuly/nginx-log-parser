@@ -13,6 +13,7 @@ var logSchema = new mongoose.Schema({
     time_local_date: { type: String },
     time_local_timestamp: { type: Number },
     remote_addr: { type: String },
+    remote_loaction: { type: String },
     remote_user: { type: String },
     request: { type: String },
     status: { type: String },
